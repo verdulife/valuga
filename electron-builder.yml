@@ -1,0 +1,7 @@
+appId: com.verdu.veluga
+productName: veluga
+copyright: Copyright © 2022 verdu
+directories:
+  output: dist
+  buildResources: build
+  app: app

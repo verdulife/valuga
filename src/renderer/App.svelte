@@ -21,14 +21,19 @@
 
   main {
     -webkit-app-region: drag;
-    background: $black;
+    background: rgba($white, 0.3);
+    box-shadow: inset 0 0 2px 1px rgba($white, 0.3);
+    border-radius: 8px;
   }
-
+  
   .wrapper {
+    -webkit-app-region: no-drag;
     position: fixed;
     inset: 10px;
     width: calc(100% - 20px);
     height: calc(100% - 20px);
-    -webkit-app-region: no-drag;
+    background: $black;
+    border-radius: 6px;
+    box-shadow: 0 5px 10px -5px rgba(#000, 0.7);
   }
 </style>

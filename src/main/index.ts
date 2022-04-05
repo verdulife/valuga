@@ -1,4 +1,4 @@
-import { app, BrowserWindow, globalShortcut, systemPreferences } from "electron";
+import { app, BrowserWindow, globalShortcut, shell, systemPreferences } from "electron";
 import path from "path";
 import { pathToFileURL } from "url";
 import appIpcMain from "./ipcMain";
@@ -13,15 +13,14 @@ function createWindow() {
 		frame: false,
 		resizable: false,
 		transparent: true,
+		show: false,
 		webPreferences: {
 			nodeIntegration: false,
 			contextIsolation: true,
 			enableRemoteModule: false,
 			preload: path.join(__dirname, 'preload.js')
 		},
-	}).once("ready-to-show", () => {
-		win.show();
-	});
+	})
 
 	if (isDevelopment) {
 		win.loadURL("http://localhost:3000");
@@ -41,9 +40,18 @@ function createWindow() {
 		else win.show();
 	});
 
+	globalShortcut.register("Esc", () => {
+		if (win.isVisible()) win.hide();
+	});
+
 	win.on("blur", () => {
 		win.hide();
-	})
+	});
+
+	win.webContents.on('new-window', function (e, url) {
+		e.preventDefault();
+		shell.openExternal(url);
+	});
 
 	// systemPreferences.on('accent-color-changed', (event, newColor) => {
 	// 	console.log(`[theme] new Accent Color detected ${newColor}`);

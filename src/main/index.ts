@@ -40,10 +40,6 @@ function createWindow() {
 		else win.show();
 	});
 
-	globalShortcut.register("Esc", () => {
-		if (win.isVisible()) win.hide();
-	});
-
 	win.on("blur", () => {
 		win.hide();
 	});

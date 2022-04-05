@@ -25,7 +25,12 @@
     console.log(matches); */
 
     try {
-      return new Function(`return ${copy}`)();
+      const evaluated = new Function(`return ${copy}`)();
+      const formated = new Intl.NumberFormat("en-US", {
+        maximumSignificantDigits: 5,
+      }).format(evaluated);
+
+      return formated;
     } catch (error) {
       return emptyValue;
     }

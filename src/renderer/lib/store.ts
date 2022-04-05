@@ -3,7 +3,7 @@ import { writable } from 'svelte/store';
 
 const defaultLine: lineType = {
 	line: 0,
-	value: '(1 + 1) / 3',
+	value: '',
 	isValid: true,
 };
 

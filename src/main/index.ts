@@ -1,4 +1,4 @@
-import { app, BrowserWindow, globalShortcut, shell, systemPreferences } from "electron";
+import { app, BrowserWindow, globalShortcut, Tray, Menu, shell, systemPreferences } from "electron";
 import path from "path";
 import { pathToFileURL } from "url";
 import appIpcMain from "./ipcMain";
@@ -14,6 +14,7 @@ function createWindow() {
 		resizable: false,
 		transparent: true,
 		show: false,
+		skipTaskbar: true,
 		webPreferences: {
 			nodeIntegration: false,
 			contextIsolation: true,
@@ -55,7 +56,39 @@ function createWindow() {
 	// });
 }
 
-app.whenReady().then(createWindow);
+function optionsWindow() {
+	const win = new BrowserWindow({
+		width: 600,
+		height: 600,
+		resizable: false,
+		webPreferences: {
+			nodeIntegration: false,
+			contextIsolation: true,
+			enableRemoteModule: false,
+			preload: path.join(__dirname, 'preload.js')
+		},
+	})
+
+	if (isDevelopment) {
+		win.loadURL("http://localhost:3000/options");
+	} else {
+		win.loadURL(
+			pathToFileURL(path.join(__dirname, "./renderer/options.html")).toString()
+		);
+	}
+}
+
+function createTray() {
+	const appIcon = new Tray('./src/main/icon.png');
+	const contextMenu = Menu.buildFromTemplate([
+		{ label: 'Options', type: 'normal', click: () => { optionsWindow() } },
+		{ label: 'Exit', type: 'normal', click: () => { app.quit(); } }
+	])
+
+	appIcon.setContextMenu(contextMenu);
+}
+
+app.whenReady().then(createTray).then(createWindow);
 
 app.on("window-all-closed", () => {
 	if (process.platform !== "darwin") {

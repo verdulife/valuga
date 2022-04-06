@@ -1,27 +1,17 @@
 <script lang="ts">
-  import type { lineType } from "@lib/types";
-  import Result from "@lib/components/Result.svelte";
+  import type { lineType, pluginType } from "@lib/types";
   import { onMount } from "svelte";
+  import { pluginStore } from "@lib/store";
+  import Result from "@lib/components/Result.svelte";
+
   export let line: lineType;
 
-  function goURL(e: KeyboardEvent) {
-    if (e.key === "Enter") {
-      e.preventDefault();
-
-      if (line.value.length === 0) return;
-
-      const isURL = new RegExp(
-        "^(http(s)?:\\/\\/.)?(www\\.)?[-a-zA-Z0-9@:%._\\+~#=]{2,256}\\.[a-z]{2,6}\\b([-a-zA-Z0-9@:%_\\+.~#?&//=]*)$"
-      );
-
-      const encoded = encodeURIComponent(line.value);
-
-      if (line.value.match(isURL)) {
-        window.open(line.value.startsWith("http") ? line.value : `https://${encoded}`);
-      } else {
-        window.open(`https://www.google.com/search?q=${encoded}`);
+  function loadPlugins(e: KeyboardEvent) {
+    $pluginStore.forEach((plugin: pluginType) => {
+      if (plugin.active) {
+        plugin.function(e, line.value);
       }
-    }
+    });
   }
 
   onMount(() => {
@@ -35,7 +25,13 @@
 </script>
 
 <div class="line row nowrap xfill">
-  <code type="text" class="grow" contenteditable="true" bind:textContent={line.value} on:keydown={(e) => goURL(e)} />
+  <code
+    type="text"
+    class="grow"
+    contenteditable="true"
+    bind:textContent={line.value}
+    on:keydown={(e) => loadPlugins(e)}
+  />
   <Result bind:req={line.value} />
 </div>
 

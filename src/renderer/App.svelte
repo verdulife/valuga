@@ -4,25 +4,46 @@
 
   import type { themeType } from "@lib/types";
   import { onMount } from "svelte";
-  import { lineStore, themeStore } from "@lib/store";
+  import { optionStore, lineStore, themeStore } from "@lib/store";
   import Line from "@lib/components/Line.svelte";
+  import Options from "/Options.svelte";
 
-  const theme = $themeStore.find((theme: themeType) => theme.active);
+  $: theme = $themeStore.find((theme: themeType) => theme.active);
 
-  onMount(() => {
+  function setTheme() {
     const main: HTMLElement = document.querySelector("main") || document.createElement("main");
     const wrapper: HTMLElement = document.querySelector(".wrapper") || document.createElement("div");
 
     main.style.cssText = theme.styles.main;
     wrapper.style.cssText = theme.styles.wrapper;
+  }
+
+  $: if (theme) setTheme();
+
+  onMount(() => {
+    setTheme();
+
+    window.addEventListener("keydown", (e) => {
+      if (e.ctrlKey && e.key === ",") {
+        $optionStore = !$optionStore;
+      }
+    });
+
+    window.addEventListener("blur", (e) => {
+      $optionStore = false;
+    });
   });
 </script>
 
-<main class="col fcenter fill">
+<main class="col fcenter fill" class:options={$optionStore}>
   <div class="wrapper col fcenter">
-    {#each $lineStore as line}
-      <Line {line} />
-    {/each}
+    {#if !$optionStore}
+      {#each $lineStore as line}
+        <Line {line} />
+      {/each}
+    {:else}
+      <Options />
+    {/if}
   </div>
 </main>
 
@@ -34,14 +55,21 @@
 
   main {
     -webkit-app-region: drag;
+    position: relative;
+    height: 80px;
     background: rgba($white, 0.3);
     box-shadow: inset 0 0 2px 1px rgba($white, 0.3);
     border-radius: 8px;
+    transition: height 500ms;
+  }
+
+  .options {
+    height: 600px;
   }
 
   .wrapper {
     -webkit-app-region: no-drag;
-    position: fixed;
+    position: absolute;
     inset: 10px;
     width: calc(100% - 20px);
     height: calc(100% - 20px);

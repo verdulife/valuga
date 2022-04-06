@@ -18,5 +18,5 @@ export type pluginType = {
 	active: boolean,
 	name: string,
 	description: string,
-	function: Function,
+	function: string,
 };

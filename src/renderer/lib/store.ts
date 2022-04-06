@@ -10,6 +10,7 @@ const defaultLine: lineType = {
 };
 
 export const lineStore = writable([defaultLine]);
+export const optionStore = writable(false);
 
 export const pluginStore = writable(JSON.parse(localStorage.getItem("pluginStore")) || [searchPlugin]);
 export const themeStore = writable(JSON.parse(localStorage.getItem("themeStore")) || [defaultTheme]);
